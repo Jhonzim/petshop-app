@@ -4,7 +4,8 @@ import {
   getProduct,
   listProducts,
   removeProduct,
-  updateExistingProduct
+  updateExistingProduct,
+  subtractProductStock
 } from '../services/productsService';
 
 export async function handleListProducts(req: Request, res: Response, next: NextFunction) {
@@ -50,6 +51,17 @@ export async function handleDeleteProduct(req: Request, res: Response, next: Nex
     const id = Number(req.params.id);
     await removeProduct(id);
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function handleSubtractStock(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = Number(req.params.id);
+    const { amount } = req.body;
+    const product = await subtractProductStock(id, amount);
+    res.json(product);
   } catch (error) {
     next(error);
   }

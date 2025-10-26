@@ -69,3 +69,14 @@ export async function updateProduct(id: number, payload: ProductBody) {
 export async function deleteProduct(id: number) {
   return prisma.product.delete({ where: { id } });
 }
+
+export async function decrementProductStock(id: number, amount: number) {
+  return prisma.product.update({
+    where: { id },
+    data: {
+      stock: {
+        decrement: amount
+      }
+    }
+  });
+}

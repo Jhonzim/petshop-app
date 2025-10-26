@@ -1,5 +1,7 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
+import { hash } from 'bcryptjs';
+import { Roles } from '../src/types/roles';
 
 const prisma = new PrismaClient();
 
@@ -204,8 +206,39 @@ const products = [
   }
 ];
 
+const users = [
+  {
+    name: 'Admin Master',
+    email: 'admin@petbuddy.com',
+    password: 'admin123',
+    role: Roles.ADMIN
+  },
+  {
+    name: 'Cliente Demo',
+    email: 'cliente@petbuddy.com',
+    password: 'cliente123',
+    role: Roles.BUYER
+  }
+];
+
 async function main() {
+  await prisma.user.deleteMany();
   await prisma.product.deleteMany();
+
+  await Promise.all(
+    users.map(async (user) => {
+      const passwordHash = await hash(user.password, 10);
+      await prisma.user.create({
+        data: {
+          name: user.name,
+          email: user.email,
+          passwordHash,
+          role: user.role
+        }
+      });
+    })
+  );
+
   await prisma.product.createMany({ data: products });
 }
 

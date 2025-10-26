@@ -6,7 +6,8 @@ import {
   findProductById,
   findProductBySku,
   findProducts,
-  updateProduct
+  updateProduct,
+  decrementProductStock
 } from '../repositories/productsRepository';
 
 const DEFAULT_PAGE = 1;
@@ -74,4 +75,22 @@ export async function removeProduct(id: number) {
     throw new AppError('Produto não encontrado.', 404);
   }
   await deleteProduct(id);
+}
+
+export async function subtractProductStock(id: number, amount: number) {
+  if (!Number.isInteger(amount) || amount <= 0) {
+    throw new AppError('Quantidade inválida para subtração.', 400);
+  }
+
+  const product = await findProductById(id);
+  if (!product) {
+    throw new AppError('Produto não encontrado.', 404);
+  }
+
+  if (product.stock < amount) {
+    throw new AppError('Estoque insuficiente para a operação.', 409);
+  }
+
+  const updated = await decrementProductStock(id, amount);
+  return updated;
 }

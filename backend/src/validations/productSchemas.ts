@@ -20,6 +20,15 @@ export const productBodySchema = z.object({
 
 export type ProductBody = z.infer<typeof productBodySchema>;
 
+export const productStockUpdateSchema = z.object({
+  amount: z
+    .number({ invalid_type_error: 'A quantidade deve ser um número.' })
+    .int('A quantidade deve ser um número inteiro.')
+    .positive('A quantidade deve ser maior que zero.')
+});
+
+export type ProductStockUpdateBody = z.infer<typeof productStockUpdateSchema>;
+
 export const productQuerySchema = z.object({
   q: z.string().optional(),
   category: z.string().optional(),
