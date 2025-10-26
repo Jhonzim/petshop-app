@@ -48,6 +48,8 @@ A API ficará disponível em `http://localhost:3000`.
 | ------------ | -------------------------------------------- | ------------------ |
 | `DATABASE_URL` | Caminho do arquivo SQLite utilizado pelo Prisma | `file:./dev.db` |
 | `PORT`       | Porta onde o servidor HTTP será iniciado     | `3000`            |
+| `JWT_SECRET` | Segredo utilizado para assinar tokens JWT    | — (definir manualmente) |
+| `JWT_EXPIRES_IN` | Tempo de expiração dos tokens (ex: `1d`, `12h`) | `1d` |
 
 ## Configuração do frontend
 
@@ -78,16 +80,29 @@ A aplicação Vite ficará disponível em `http://localhost:5173`.
 
 | Método | Rota                 | Descrição                                                                 |
 | ------ | -------------------- | ------------------------------------------------------------------------- |
+| POST   | `/api/auth/login`    | Gera um token JWT para acesso de compradores e administradores.          |
 | GET    | `/api/health`        | Verificação de saúde do serviço.                                         |
 | GET    | `/api/products`      | Lista produtos com filtros (`q`, `category`, `minPrice`, `maxPrice`, `page`, `pageSize`). |
 | GET    | `/api/products/:id`  | Retorna um produto específico.                                           |
-| POST   | `/api/products`      | Cria um produto. SKU é único e os campos são validados com Zod.           |
-| PUT    | `/api/products/:id`  | Atualiza um produto existente.                                            |
-| DELETE | `/api/products/:id`  | Remove um produto.                                                        |
+| POST   | `/api/products`      | Cria um produto (apenas admins). Campos validados com Zod.               |
+| PUT    | `/api/products/:id`  | Atualiza um produto existente (apenas admins).                           |
+| DELETE | `/api/products/:id`  | Remove um produto (apenas admins).                                       |
+| POST   | `/api/products/:id/decrement` | Subtrai itens do estoque (apenas compradores).                              |
 
 ## Dados de seed
 
-O script de seed cria 20 produtos com categorias variadas, preços em reais, estoque e descrições reais de itens comuns em pet shops.
+O script de seed cria 20 produtos com categorias variadas, preços em reais, estoque e descrições reais de itens comuns em pet shops. Ele também provisiona dois usuários:
+
+- **Admin**: `admin@petbuddy.com` / `admin123`
+- **Comprador**: `cliente@petbuddy.com` / `cliente123`
+
+Utilize essas credenciais para acessar os dois fluxos de login no frontend.
+
+## Autenticação e perfis
+
+- `/` exibe o formulário de login do **comprador**. Após autenticação, o catálogo fica disponível em `/catalog` e a página de detalhes permite efetuar compras, subtraindo unidades do estoque.
+- `/admin` exibe o login do **administrador**. Depois de entrar, o painel administrativo fica em `/admin/dashboard`, com edição e remoção de produtos nas rotas `/admin/:id`.
+- As requisições autenticadas utilizam JWT via header `Authorization: Bearer <token>`.
 
 ## Pronto para QA
 

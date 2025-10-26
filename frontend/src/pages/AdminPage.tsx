@@ -34,7 +34,7 @@ export default function AdminPage() {
   }, [id]);
 
   function handleBackToCatalog() {
-    navigate('/');
+    navigate('/catalog');
   }
 
   return (
@@ -49,7 +49,10 @@ export default function AdminPage() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Link to="/" className="rounded border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+          <Link
+            to="/catalog"
+            className="rounded border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+          >
             Voltar ao catálogo
           </Link>
           {id && (
@@ -60,7 +63,7 @@ export default function AdminPage() {
                 if (!confirm('Tem certeza que deseja remover este produto?')) return;
                 try {
                   await api.delete(`/api/products/${id}`);
-                  navigate('/');
+                  navigate('/catalog');
                 } catch (err: any) {
                   setError(err?.response?.data?.error?.message ?? 'Erro ao remover produto.');
                 }

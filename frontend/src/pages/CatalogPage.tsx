@@ -4,6 +4,8 @@ import api from '../services/api';
 import FiltersBar from '../components/FiltersBar';
 import ProductCard from '../components/ProductCard';
 import type { PaginatedProducts, Product } from '../types/product';
+import { useAuth } from '../contexts/AuthContext';
+import { Roles } from '../types/auth';
 
 interface Filters {
   q: string;
@@ -15,6 +17,7 @@ interface Filters {
 const initialFilters: Filters = { q: '', category: '', minPrice: '', maxPrice: '' };
 
 export default function CatalogPage() {
+  const { user } = useAuth();
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [page, setPage] = useState(1);
   const [data, setData] = useState<PaginatedProducts | null>(null);
@@ -33,6 +36,8 @@ export default function CatalogPage() {
   }, [filters, page]);
 
   useEffect(() => {
+    if (!user) return;
+
     async function fetchProducts() {
       setIsLoading(true);
       setError(null);
@@ -47,7 +52,7 @@ export default function CatalogPage() {
     }
 
     fetchProducts();
-  }, [queryString]);
+  }, [queryString, user]);
 
   function handleFiltersChange(partial: Partial<Filters>) {
     setFilters((prev) => ({ ...prev, ...partial }));
@@ -79,12 +84,14 @@ export default function CatalogPage() {
           <h1 className="text-2xl font-semibold">Catálogo</h1>
           <p className="text-sm text-slate-600">Explore nossos itens favoritos para o seu pet.</p>
         </div>
-        <Link
-          to="/admin"
-          className="inline-flex items-center justify-center rounded bg-primary px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-blue-600"
-        >
-          + Novo produto
-        </Link>
+        {user?.role === Roles.ADMIN && (
+          <Link
+            to="/admin/dashboard"
+            className="inline-flex items-center justify-center rounded bg-primary px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-blue-600"
+          >
+            + Novo produto
+          </Link>
+        )}
       </div>
 
       <FiltersBar filters={filters} onChange={handleFiltersChange} onReset={handleResetFilters} />
