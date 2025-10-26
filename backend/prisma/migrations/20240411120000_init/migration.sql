@@ -1,0 +1,21 @@
+CREATE TABLE "Product" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "name" TEXT NOT NULL,
+  "sku" TEXT NOT NULL,
+  "category" TEXT NOT NULL,
+  "price" REAL NOT NULL,
+  "stock" INTEGER NOT NULL,
+  "description" TEXT NOT NULL,
+  "imageUrl" TEXT NOT NULL,
+  "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE UNIQUE INDEX "Product_sku_key" ON "Product"("sku");
+
+CREATE TRIGGER set_updated_at
+AFTER UPDATE ON "Product"
+FOR EACH ROW
+BEGIN
+  UPDATE "Product" SET "updatedAt" = CURRENT_TIMESTAMP WHERE "id" = OLD."id";
+END;
