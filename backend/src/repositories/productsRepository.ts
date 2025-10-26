@@ -13,11 +13,12 @@ export interface ProductFilters {
 export async function findProducts(filters: ProductFilters) {
   const where: Record<string, unknown> = {};
 
-  if (filters.q) {
+  if (filters.q?.trim()) {
+    const searchTerm = filters.q.trim();
     where.OR = [
-      { name: { contains: filters.q, mode: 'insensitive' } },
-      { description: { contains: filters.q, mode: 'insensitive' } },
-      { category: { contains: filters.q, mode: 'insensitive' } }
+      { name: { contains: searchTerm } },
+      { description: { contains: searchTerm } },
+      { category: { contains: searchTerm } }
     ];
   }
 
