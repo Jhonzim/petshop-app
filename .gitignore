@@ -1,0 +1,21 @@
+# Node
+node_modules/
+dist/
+.build/
+*.log
+
+# Env
+.env
+.env.local
+
+# Prisma
+backend/prisma/dev.db
+backend/prisma/*.db-journal
+backend/prisma/migrations/*/migration_lock.toml
+
+# Vite
+frontend/.vite/
+frontend/dist/
+
+# Mac
+.DS_Store
